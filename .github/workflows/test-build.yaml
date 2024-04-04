@@ -21,11 +21,6 @@ jobs:
           echo "Exporting domain as $domain"
           export domain=domain
           
-      - name: Install Go and Required Tools
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.14'
-          check-latest: true
       - name: Install Subfinder and HTTPX
         run: |
           go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
