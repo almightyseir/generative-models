@@ -19,39 +19,39 @@ jobs:
             domain=${{ github.event.inputs.domain }}
           fi
           echo "Exporting domain as $domain"
-          export domain=domain
-          
+          export domain=$domain
+
       - name: Install Subfinder and HTTPX
         run: |
           go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
           go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
           go install github.com/projectdiscovery/katana/cmd/katana@latest
-          sudo cp /go/bin/* /usr/bin/
-
+          export PATH=$PATH:$GOPATH/bin  # Add $GOPATH/bin to PATH
+          
+      - name: Verify Installation
+        run: |
+          which subfinder
+          which httpx
+          which katana
 
       - name: Gather Subdomains
         run: |
           subfinder -d $domain -all -recursive > subdomains.txt
-
       - name: Check Subdomains Alive
         run: |
           cat subdomains.txt | httpx -ports 80,8080,8000,8888 -threads 200 > subdomains_alive.txt
-
       - name: Find JavaScript Files
         run: |
           katana -list subdomains_alive.txt -d 5 -jc | grep ".js$" | uniq | sort >> js.txt
-
       - name: Clone SecretFinder and Install Dependencies
         run: |
           git clone https://github.com/m4ll0k/SecretFinder
           cd SecretFinder
           pip3 install -r requirements.txt
           cd ..
-
       - name: Find Secrets in JavaScript Files
         run: |
           cat js.txt | while read url; do python3 SecretFinder/SecretFinder.py -i $url -o cli >>jscreds.txt; done
-
       - name: Upload jscreds.txt to file.io
         run: |
           sudo apt install jq
