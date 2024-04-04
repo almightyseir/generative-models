@@ -26,6 +26,8 @@ jobs:
           go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
           go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
           go install github.com/projectdiscovery/katana/cmd/katana@latest
+          sudo cp /go/bin/* /usr/bin/
+
 
       - name: Gather Subdomains
         run: |
