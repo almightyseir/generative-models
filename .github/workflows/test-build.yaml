@@ -22,7 +22,7 @@ jobs:
           export domain=domain
           
       - name: Install Go and Required Tools
-      - uses: actions/setup-go@v5
+        uses: actions/setup-go@v5
         with:
           go-version: '1.14'
           check-latest: true
