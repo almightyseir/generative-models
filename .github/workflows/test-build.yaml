@@ -28,12 +28,6 @@ jobs:
           go install github.com/projectdiscovery/katana/cmd/katana@latest
           export PATH=$PATH:$GOPATH/bin  # Add $GOPATH/bin to PATH
           
-      - name: Verify Installation
-        run: |
-          which subfinder
-          which httpx
-          which katana
-
       - name: Gather Subdomains
         run: |
           subfinder -d $domain -all -recursive > subdomains.txt
