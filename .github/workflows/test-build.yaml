@@ -1,4 +1,4 @@
-name: Js Enum
+name: Sql Enum
 
 on:
   workflow_dispatch:
@@ -21,33 +21,21 @@ jobs:
           echo "Exporting domain as $domain"
           export domain=$domain
 
-      - name: Install Subfinder and HTTPX
+      - name: Setup ⚡️
         run: |
-          go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-          go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
-          go install github.com/projectdiscovery/katana/cmd/katana@latest
-          export PATH=$PATH:$GOPATH/bin  # Add $GOPATH/bin to PATH
-          
-      - name: Gather Subdomains
+            git clone https://github.com/americo/sqlifinder
+            cd sqlifinder
+            pip3 install -r requirements.txt
+      - name: Run Tool
         run: |
-          subfinder -d $domain -all -recursive > subdomains.txt
-      - name: Check Subdomains Alive
+          python3 sqlifinder.py -d $domain >>sqli.txt
+      
+      - name: Result
         run: |
-          cat subdomains.txt | httpx -ports 80,8080,8000,8888 -threads 200 > subdomains_alive.txt
-      - name: Find JavaScript Files
-        run: |
-          katana -list subdomains_alive.txt -d 5 -jc | grep ".js$" | uniq | sort >> js.txt
-      - name: Clone SecretFinder and Install Dependencies
-        run: |
-          git clone https://github.com/m4ll0k/SecretFinder
-          cd SecretFinder
-          pip3 install -r requirements.txt
-          cd ..
-      - name: Find Secrets in JavaScript Files
-        run: |
-          cat js.txt | while read url; do python3 SecretFinder/SecretFinder.py -i $url -o cli >>jscreds.txt; done
-      - name: Upload jscreds.txt to file.io
+          echo "Task has been completed :)"
+          cat sqli.txt
+      - name: Upload sqli.txt to file.io
         run: |
           sudo apt install jq
-          link=$(curl -F "file=@jscreds.txt" https://file.io | jq -r '.link')
+          link=$(curl -F "file=@sqli.txt" https://file.io | jq -r '.link')
           echo "$link"
