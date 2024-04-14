@@ -29,7 +29,7 @@ jobs:
       - name: Run Tool
         run: |
           pwd
-          python3 sqlifinder/sqlifinder.py -d $domain >>sqli.txt
+          python3 sqlifinder/sqlifinder.py -d ${{ github.event.inputs.domain }} >>sqli.txt
       
       - name: Result
         run: |
