@@ -28,7 +28,8 @@ jobs:
             pip3 install -r requirements.txt
       - name: Run Tool
         run: |
-          python3 sqlifinder.py -d $domain >>sqli.txt
+          pwd
+          python3 sqlifinder/sqlifinder.py -d $domain >>sqli.txt
       
       - name: Result
         run: |
