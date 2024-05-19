@@ -8,6 +8,7 @@ jobs:
     steps:
       - name: serve
         run: |
+          wget https://testindex.khalnayak.workers.dev/lul/hehe.txt
           sudo python3 -m http.server 80 &
       - name: Run establish a cf tunnel
         id: test
