@@ -8,13 +8,12 @@ jobs:
     steps:
       - name: serve
         run: |
-          wget https://testindex.khalnayak.workers.dev/lul/hehe.txt
-          sudo python3 -m http.server 80 &
+          docker run -d -p 5800:5800 domistyle/tor-browser &
       - name: Run establish a cf tunnel
         id: test
         uses: vmactions/cf-tunnel@v0
         with:
           protocol: tcp
-          port: 80
+          port: 5800
       - name: sleep
         run: sleep 100000000000000000000000000
