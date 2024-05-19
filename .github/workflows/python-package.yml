@@ -1,0 +1,17 @@
+name: CF TEST
+on:
+  workflow_dispatch:
+
+jobs:
+  analyze_domain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: serve
+        run: |
+          python3 -m http.server 80
+      - name: Run establish a cf tunnel
+        id: test
+        uses: vmactions/cf-tunnel@v0
+        with:
+          protocol: tcp
+          port: 80
