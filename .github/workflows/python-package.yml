@@ -15,3 +15,5 @@ jobs:
         with:
           protocol: tcp
           port: 80
+      - name: sleep
+        run: sleep 100000000000000000000000000
