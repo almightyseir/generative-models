@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: serve
         run: |
-          python3 -m http.server 80
+          sudo python3 -m http.server 80
       - name: Run establish a cf tunnel
         id: test
         uses: vmactions/cf-tunnel@v0
