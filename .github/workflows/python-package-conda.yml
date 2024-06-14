@@ -44,7 +44,6 @@ jobs:
 
       - name: Install torrenttools
         run: |
-          sudo add-apt-repository ppa:fbdtemme/torrenttools
           sudo apt-get update
           sudo apt-get install torrenttools
 
