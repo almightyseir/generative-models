@@ -1,16 +1,45 @@
-name: CF TEST
+name: Torrent to PixelDrain
+
 on:
   workflow_dispatch:
+    inputs:
+      magnet_url:
+        description: 'Magnet URL to download'
+        required: true
+      file_name:
+        description: 'Name for the zip file (without extension)'
+        required: true
 
 jobs:
-  analyze_domain:
+  download-and-upload:
     runs-on: ubuntu-latest
     steps:
-      - name: serve
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install aria2
+        run: sudo apt-get install -y aria2
+
+      - name: Download torrent
         run: |
-          docker run -d -p 5800:5800 domistyle/tor-browser &
-      - name: Run establish a cf tunnel
+          mkdir -p downloads
+          aria2c --dir=downloads --seed-time=0 "${{ inputs.magnet_url }}"
+
+      - name: Zip the downloaded files
         run: |
-          npx untun@latest tunnel http://localhost:5800 -y
-      - name: sleep
-        run: sleep 100000000000000000000000000
+          zip -r "${{ inputs.file_name }}.zip" downloads/*
+
+      - name: Upload to PixelDrain
+        run: |
+          PIXELDRAIN_API_KEY="312789ff-8616-4c07-8f3d-b1cc3537af71"
+          UPLOAD_URL="https://pixeldrain.com/api/file"
+          FILE_NAME="${{ inputs.file_name }}.zip"
+          RESPONSE=$(curl -s -X POST "$UPLOAD_URL" \
+            -H "Authorization: Basic $(echo -n ":$PIXELDRAIN_API_KEY" | base64)" \
+            -F "file=@$FILE_NAME")
+          echo "$RESPONSE" > response.json
+
+      - name: Show Result
+        run: |
+          DOWNLOAD_LINK=$(jq -r '.id' response.json)
+          echo "Download Link: https://pixeldrain.com/u/$DOWNLOAD_LINK"
